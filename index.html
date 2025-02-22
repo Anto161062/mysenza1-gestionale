@@ -1,5 +1,69 @@
 <!DOCTYPE html>
-<html>
-<head><title>MySenza1 Gestionale</title></head>
-<body><h1>Gestione Promo MySenza1</h1></body>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Promo MySenza1</title>
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyrdLIYh8WgN2DtNDzzOb9_N6JP3YWr-vH_aUYdCgPj_G60IffSK3zxD-yknpf67omH/exec';
+
+        function submitForm(event) {
+            event.preventDefault();
+            
+            const form = document.getElementById("orderForm");
+            const formData = new FormData(form);
+            
+            fetch(scriptURL, { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    alert("Ordine registrato con successo! Verifica i tuoi premi nella sezione dedicata.");
+                    form.reset();
+                })
+                .catch(error => console.error("Errore nell'invio dei dati:", error));
+        }
+
+        function loadRewards() {
+            fetch(scriptURL + '?action=getRewards')
+                .then(response => response.json())
+                .then(data => {
+                    const rewardsList = document.getElementById("rewardsList");
+                    rewardsList.innerHTML = "";
+                    data.forEach(reward => {
+                        const li = document.createElement("li");
+                        li.textContent = `Hai guadagnato: ${reward.premio}`;
+                        rewardsList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error("Errore nel recupero premi:", error));
+        }
+    </script>
+</head>
+<body>
+    <h1>Gestione Promo MySenza1</h1>
+    <form id="orderForm" onsubmit="submitForm(event)">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required><br>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        
+        <label for="prodotto">Prodotto Acquistato:</label>
+        <select id="prodotto" name="prodotto" required>
+            <option value="Bucato 500ml">Bucato 500ml</option>
+            <option value="Ambiente 500ml">Ambiente 500ml</option>
+        </select><br>
+        
+        <label for="referente">Chi ti ha portato?</label>
+        <input type="text" id="referente" name="referente"><br>
+        
+        <label for="amici">Numero di amici portati:</label>
+        <input type="number" id="amici" name="amici" min="0"><br>
+        
+        <button type="submit">Invia Ordine</button>
+    </form>
+    
+    <h2>I miei premi</h2>
+    <ul id="rewardsList"></ul>
+    <button onclick="loadRewards()">Visualizza i Premi</button>
+</body>
 </html>
